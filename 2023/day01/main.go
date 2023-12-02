@@ -26,21 +26,29 @@ func main() {
 }
 
 func part1(lines []string) int {
+	return solve(lines, false)
+}
+
+func part2(lines []string) int {
+	return solve(lines, true)
+}
+
+func solve(lines []string, findTextNumbers bool) int {
 	sum := 0
 	for _, line := range lines {
-		var first, last rune
+		var first, last int
 		if line == "" {
 			continue
 		}
-		for _, char := range line {
-			if unicode.IsNumber(char) {
+		for i := range line {
+			if num, isNumber := lineToNumber(line, i, findTextNumbers); isNumber {
 				if first == 0 {
-					first = char
+					first = num
 				}
-				last = char
+				last = num
 			}
 		}
-		value, _ := strconv.Atoi(fmt.Sprintf("%c%c", first, last))
+		value, _ := strconv.Atoi(fmt.Sprintf("%d%d", first, last))
 		sum += value
 	}
 	return sum
@@ -58,36 +66,18 @@ var textNumMap = map[string]int{
 	"nine":  9,
 }
 
-func part2(lines []string) int {
-	sum := 0
-	for _, line := range lines {
-		var first, last = -1, -1
-		if line == "" {
-			continue
-		}
-		for i := range line {
-			if num, isNumber := lineToNumber(line, i); isNumber {
-				if first == -1 {
-					first = num
-				}
-				last = num
-			}
-		}
-		value, _ := strconv.Atoi(fmt.Sprintf("%d%d", first, last))
-		sum += value
-	}
-	return sum
-}
-
-func lineToNumber(line string, i int) (int, bool) {
+func lineToNumber(line string, i int, findTextNums bool) (int, bool) {
 	if unicode.IsNumber(rune(line[i])) {
 		num, _ := strconv.Atoi(string(line[i]))
 		return num, true
 	}
-	for word, num := range textNumMap {
-		if strings.HasPrefix(line[i:], word) {
-			return num, true
+	// part 2
+	if findTextNums {
+		for word, num := range textNumMap {
+			if strings.HasPrefix(line[i:], word) {
+				return num, true
+			}
 		}
 	}
-	return -1, false
+	return 0, false
 }
