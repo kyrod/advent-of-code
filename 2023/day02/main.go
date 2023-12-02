@@ -52,19 +52,8 @@ func parseGame(line string) (int, map[string]int) {
 			cSplit := strings.Split(color, " ")
 			numString, c := cSplit[0], cSplit[1]
 
-			switch c {
-			case red:
-				num, _ := strconv.Atoi(numString)
-				maxCubes[c] = max(maxCubes[c], num)
-
-			case green:
-				num, _ := strconv.Atoi(numString)
-				maxCubes[c] = max(maxCubes[c], num)
-
-			case blue:
-				num, _ := strconv.Atoi(numString)
-				maxCubes[c] = max(maxCubes[c], num)
-			}
+			num, _ := strconv.Atoi(numString)
+			maxCubes[c] = max(maxCubes[c], num)
 		}
 	}
 	return gameNum, maxCubes
