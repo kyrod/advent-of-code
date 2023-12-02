@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
-	_ "runtime/pprof"
 	"strconv"
 	"strings"
+	"sync"
 	"unicode"
 )
 
@@ -80,4 +80,38 @@ func lineToNumber(line string, i int, findTextNums bool) (int, bool) {
 		}
 	}
 	return 0, false
+}
+
+// this is about 5x slower due to the overhead of the goroutines and everything, but just to try it out
+func solveGoroutine(lines []string, findTextNumbers bool) int {
+	sum := 0
+	wg := sync.WaitGroup{}
+	ch := make(chan int, len(lines))
+	for _, line := range lines {
+		wg.Add(1)
+		go func(line string) {
+			var first, last int
+			if line == "" {
+				wg.Done()
+				return
+			}
+			for i := range line {
+				if num, isNumber := lineToNumber(line, i, findTextNumbers); isNumber {
+					if first == 0 {
+						first = num
+					}
+					last = num
+				}
+			}
+			value, _ := strconv.Atoi(fmt.Sprintf("%d%d", first, last))
+			ch <- value
+			wg.Done()
+		}(line)
+	}
+	wg.Wait() // wait for all N goroutines to finish
+	close(ch) // then, close the channel
+	for s := range ch {
+		sum += s
+	}
+	return sum
 }
