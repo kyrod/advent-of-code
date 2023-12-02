@@ -37,9 +37,6 @@ func solve(lines []string, findTextNumbers bool) int {
 	sum := 0
 	for _, line := range lines {
 		var first, last int
-		if line == "" {
-			continue
-		}
 		for i := range line {
 			if num, isNumber := lineToNumber(line, i, findTextNumbers); isNumber {
 				if first == 0 {
@@ -91,10 +88,6 @@ func solveGoroutine(lines []string, findTextNumbers bool) int {
 		wg.Add(1)
 		go func(line string) {
 			var first, last int
-			if line == "" {
-				wg.Done()
-				return
-			}
 			for i := range line {
 				if num, isNumber := lineToNumber(line, i, findTextNumbers); isNumber {
 					if first == 0 {
